@@ -17,9 +17,9 @@ function init() {
     var firstSample = sampleNames[0];
     buildCharts(firstSample);
     buildMetadata(firstSample);
+    buildGauge(firstSample);
   });
 }
-
 // Initialize the dashboard
 init();
 
@@ -27,9 +27,8 @@ function optionChanged(newSample) {
   // Fetch new data each time a new sample is selected
   buildMetadata(newSample);
   buildCharts(newSample);
-  
+  buildGauge(newSample); 
 }
-
 // Demographics Panel 
 function buildMetadata(sample) {
   d3.json("samples.json").then((data) => {
@@ -52,7 +51,6 @@ function buildMetadata(sample) {
 
   });
 }
-
 // 1. Create the buildCharts function.
 function buildCharts(sample) {
   // 2. Use d3.json to load and retrieve the samples.json file 
@@ -91,3 +89,46 @@ var barLayout = {
 Plotly.newPlot("bar", barData, barLayout)   
   });
 }
+
+    //"Gauge" chart
+    d3.json("samples.json").then((data) => {
+      var metadata = data.metadata;
+      var resultArray = metadata.filter(sampleObj => sampleObj.id == sample);
+      var resultWfreq = resultArray[0].wfreq;
+
+
+    var data3 = [
+      {        
+        value: resultWfreq,
+        title: { text: "Belly Button Washing Frequency\n(Scrubs per Week)" },
+        type: "indicator",
+        mode: "gauge+delta",
+        delta: { reference: 0 },
+        
+        gauge: {
+          axis: { range: [0, 10],tickwidth: 1, tickcolor: "darkblue"  },
+          
+          bar: { color: "orange" },
+          bgcolor: "white",
+          borderwidth: 2,
+          bordercolor: "black",
+          steps: [
+            { range: [0, 1], color: "rgba(0, 255,0, 0.6)" },
+            { range: [1, 2], color: "rgba(30, 255, 0, 0.6)" },
+            { range: [2, 3], color: "rgba(60, 255, 0, 0.6)" },
+            { range: [3, 4], color: "rgba(90, 255, 0, 0.6)" },
+            { range: [4, 5], color: "rgba(120, 255, 0, 0.6)" },
+            { range: [5, 6], color: "rgba(150, 255, 0, 0.6)" },
+            { range: [6, 7], color: "rgba(180, 255, 0, 0.6)" },
+            { range: [7, 8], color: "rgba(210, 255, 0, 0.6)" },
+            { range: [8, 9], color: "rgba(240, 255, 0, 0.6)" },
+            { range: [9, 10], color: "rgba(255, 255, 0, 0.6)" }
+          ]
+          
+        }
+      }
+    ];
+    
+    var layout3 = { width: 600, height: 450, margin: { t: 0, b: 0 } };
+    Plotly.newPlot('gauge', data3, layout3);
+})
